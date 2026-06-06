@@ -19,7 +19,8 @@ import { show_dialog } from './notificationdaemon.js';
     let detail=reactive({});
     let status=reactive({});
     let count=0;
-    const {isAuthenticated,isLoading}=useAuth0();
+    const isLoading=ref(false);
+    const isAuthenticated=ref(false);
     async function handle_like(){
         if(isLoading.value || status.reaction=="liked"){return;}
         if(!isAuthenticated.value){
