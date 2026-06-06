@@ -8,7 +8,7 @@
   const err=ref(null);
   const resolved=ref(false);
   const problems=ref([]);
-  const {isAuthenticated}=useAuth0();
+  const isAuthenticated=ref(false);
   onMounted(async()=>{
     watch(()=>isAuthenticated.value,async()=>{
       resolved.value=false;
