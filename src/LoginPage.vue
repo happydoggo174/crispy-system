@@ -3,26 +3,24 @@
     import router from "./router";
     import {ref} from "vue";
     import { show_dialog } from './notificationdaemon';
+    import app from './firebase.js';
+    import { getAuth,signInWithEmailAndPassword } from 'firebase/auth';
     const email=ref("");
     const password=ref("");
     function handle_login(e){
         e.preventDefault();
-        const accounts=localStorage.getItem("accounts");
-        if(accounts==null){
-            show_dialog("error","wrong username or password");
-            return;
-        }
-        let found=false;
-        JSON.parse(accounts).forEach(usr=>{
-            if(usr.email==email.value && usr.password==password.value){
-                sessionStorage.setItem("currUsr",JSON.stringify({username:usr.username,email:usr.email}));
-                found=true;
-                router.push("/");
-            }
+        const auth = getAuth(app);
+        signInWithEmailAndPassword(auth, email.value,password.value)
+        .then((userCredential) => {
+            // Signed in 
+            const user = userCredential.user;
+            router.push("/").then();
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            show_dialog("error","wrong username or password",true);
         });
-        if(!found){
-            show_dialog("error","wrong username or password");
-        }  
     }
 </script>
 <style>

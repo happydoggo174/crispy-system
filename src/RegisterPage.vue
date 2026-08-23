@@ -3,32 +3,23 @@
     import router from "./router";
     import {ref} from "vue";
     import { show_dialog } from './notificationdaemon';
+    import app from './firebase.js';
+    import { getAuth,createUserWithEmailAndPassword } from "firebase/auth";
     const username=ref("");
     const password=ref("");
     const email=ref("");
     function handle_register(e){
         e.preventDefault();
-        const accounts=localStorage.getItem("accounts");
-        if(accounts==null){
-            localStorage.setItem("accounts",
-                JSON.stringify([{username:username.value,password:password.value,email:email.value}]));
-            sessionStorage.setItem("currUsr",JSON.stringify({username:username.value,email:email.value}));
-        }else{
-            const acc=JSON.parse(accounts);
-            let fail=false;
-            acc.forEach(account => {
-                if(account.email==email.value){
-                    fail=true;
-                    show_dialog("error","this email has been taken");
-                    return;
-                }
-            });
-            if(!fail){
-                acc.push({username:username.value,password:password.value,email:email.value});
-            }
-            localStorage.setItem("accounts",JSON.stringify(acc));
-            sessionStorage.setItem("currUsr",JSON.stringify({username:username.value,email:email.value}));
+        const auth=getAuth(app);
+        const email_val=email.value;
+        const pass_val=password.value;
+        if(email_val=='' || email_val.indexOf("@")==-1){
+            return show_dialog("error","invalid email",true);
         }
+        if(pass_val.length<6){
+            return show_dialog("error","password too short",true);
+        }
+        createUserWithEmailAndPassword(auth,email_val,pass_val);
         router.push("/");
     }
 </script>
